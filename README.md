@@ -1,6 +1,6 @@
-# 🤖 Informe Técnico: Análisis y Simulación Cinemática de un Brazo Robótico 3-GDL
+# 🤖 **Informe Técnico: Análisis y Simulación Cinemática de un Brazo Robótico 3-GDL**
 
-## 📜 Índice del Proyecto
+## 📜 **Índice del Proyecto**
 
 1.  [**Introducción**](#-1-introducción)
 2.  [**Aplicaciones**](#-2-aplicaciones)
@@ -43,9 +43,7 @@ Los objetivos del proyecto, basados en el roadmap, son:
 ### 📏 4. Alcance del Análisis Cinemático
 El alcance de este proyecto se centra en el **análisis y la implementación del modelo cinemático** del manipulador. El enfoque es matricial, utilizando las transformaciones homogéneas de Denavit-Hartenberg. La matriz genérica que describe la transformación entre eslabones consecutivos ($T_{i}^{i-1}$) y que forma la base de nuestro análisis es:
 
-$$
-T_{i}^{i-1} = \begin{bmatrix} \cos\theta_i & -\sin\theta_i\cos\alpha_i & \sin\theta_i\sin\alpha_i & a_i\cos\theta_i \\ \sin\theta_i & \cos\theta_i\cos\alpha_i & -\cos\theta_i\sin\alpha_i & a_i\sin\theta_i \\ 0 & \sin\alpha_i & \cos\alpha_i & d_i \\ 0 & 0 & 0 & 1 \end{bmatrix}
-$$
+![Matriz de Transformación Homogénea D-H](https://latex.codecogs.com/svg.latex?T_{i}^{i-1}%20=%20\begin{bmatrix}%20\cos\theta_i%20&%20-\sin\theta_i\cos\alpha_i%20&%20\sin\theta_i\sin\alpha_i%20&%20a_i\cos\theta_i%20\\%20\sin\theta_i%20&%20\cos\theta_i\cos\alpha_i%20&%20-\cos\theta_i\sin\alpha_i%20&%20a_i\sin\theta_i%20\\%200%20&%20\sin\alpha_i%20&%20\cos\alpha_i%20&%20d_i%20\\%200%20&%200%20&%200%20&%201%20\end{bmatrix})
 
 El proyecto aborda tanto la cinemática directa como la inversa, limitado a una simulación virtual sin considerar dinámicas ni colisiones.
 
@@ -73,23 +71,17 @@ La FK responde a la pregunta: *"Si conozco los ángulos de las articulaciones, �
 
 * **Procedimiento Matemático Matricial**
     El método consiste en multiplicar secuencialmente las matrices de transformación para encontrar la transformación total. La ecuación fundamental es:
-    $$
-    T_{3}^{0} = T_{1}^{0}(\theta_1) \cdot T_{2}^{1}(\theta_2) \cdot T_{3}^{2}(\theta_3)
-    $$
+    ![Ecuación de Cinemática Directa](https://latex.codecogs.com/svg.latex?T_{3}^{0}%20=%20T_{1}^{0}(\theta_1)%20\cdot%20T_{2}^{1}(\theta_2)%20\cdot%20T_{3}^{2}(\theta_3))
 
 * **Caso de Estudio Práctico (FK)**
     Para la configuración articular de ejemplo $\{\theta_1, \theta_2, \theta_3\} = \{40^\circ, 60^\circ, -50^\circ\}$, las matrices individuales son:
-    $$
-    \displaylines{
-    T_{1}^{0} = \begin{bmatrix} 0.766 & 0 & 0.643 & 0 \\ 0.643 & 0 & -0.766 & 0 \\ 0 & 1 & 0 & 10 \\ 0 & 0 & 0 & 1 \end{bmatrix} \\ \\
-    T_{2}^{1} = \begin{bmatrix} 0.5 & -0.866 & 0 & 6 \\ 0.866 & 0.5 & 0 & 10.392 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix} \\ \\
-    T_{3}^{2} = \begin{bmatrix} 0.643 & 0.766 & 0 & 5.144 \\ -0.766 & 0.643 & 0 & -6.128 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}
-    }
-    $$
+
+    ![Matrices de Transformación Individuales](https://latex.codecogs.com/svg.latex?\displaylines{T_{1}^{0}%20=%20\begin{bmatrix}%200.766%20&%200%20&%200.643%20&%200%20\\%200.643%20&%200%20&%20-0.766%20&%200%20\\%200%20&%201%20&%200%20&%2010%20\\%200%20&%200%20&%200%20&%201%20\end{bmatrix}%20\\%20\\%20T_{2}^{1}%20=%20\begin{bmatrix}%200.5%20&%20-0.866%20&%200%20&%206%20\\%200.866%20&%200.5%20&%200%20&%2010.392%20\\%200%20&%200%20&%201%20&%200%20\\%200%20&%200%20&%200%20&%201%20\end{bmatrix}%20\\%20\\%20T_{3}^{2}%20=%20\begin{bmatrix}%200.643%20&%200.766%20&%200%20&%205.144%20\\%20-0.766%20&%200.643%20&%200%20&%20-6.128%20\\%200%20&%200%20&%201%20&%200%20\\%200%20&%200%20&%200%20&%201%20\end{bmatrix}%20})
+
     El producto de estas matrices da como resultado la matriz de transformación total:
-    $$
-    T_{3}^{0} = \begin{bmatrix} 0.174 & 0.985 & 0.000 & 10.632 \\ -0.150 & 0.087 & -0.985 & 8.921 \\ 0.985 & -0.174 & 0.000 & 21.781 \\ 0 & 0 & 0 & 1 \end{bmatrix}
-    $$
+    
+    ![Matriz de Transformación Total](https://latex.codecogs.com/svg.latex?T_{3}^{0}%20=%20\begin{bmatrix}%200.174%20&%200.985%20&%200.000%20&%2010.632%20\\%20-0.150%20&%200.087%20&%20-0.985%20&%208.921%20\\%200.985%20&%20-0.174%20&%200.000%20&%2021.781%20\\%200%20&%200%20&%200%20&%201%20\end{bmatrix})
+
     De esta matriz se extrae la posición cartesiana del efector final: **$(x, y, z) = (10.632, 8.921, 21.781)$**.
 
 * **Implementación en Python (FK)**
@@ -111,9 +103,7 @@ La IK responde a la pregunta: *"Para que el efector final alcance un punto $(x, 
 
 * **Procedimiento Teórico-Matricial**
     Teóricamente, una vez que se tiene la ecuación $T_{3}^{0} = T_{obj}$, la IK se resuelve despejando las variables angulares. Un enfoque matricial consiste en pre-multiplicar la ecuación por la inversa de cada matriz para aislar las articulaciones:
-    $$
-    (T_{1}^{0})^{-1} \cdot T_{obj} = T_{2}^{1}(\theta_2) \cdot T_{3}^{2}(\theta_3)
-    $$
+    ![Ecuación de Cinemática Inversa](https://latex.codecogs.com/svg.latex?(T_{1}^{0})^{-1}%20\cdot%20T_{obj}%20=%20T_{2}^{1}(\theta_2)%20\cdot%20T_{3}^{2}(\theta_3))
 
 * **Enfoque Práctico (Solución Geométrica)**
     Para este robot, es más eficiente utilizar un **método geométrico** basado en el desacoplamiento cinemático.
@@ -151,12 +141,12 @@ La validación numérica se complementa con la visualización gráfica del simul
 **Gráfico 1: Visualización del Brazo por Cinemática Directa**
 > *Posición del brazo para los ángulos de entrada $\{\theta_1, \theta_2, \theta_3\} = \{40^\circ, 60^\circ, -50^\circ\}$. Valida que el cálculo de la FK es correcto.*
 
-![Visualización del Brazo Robótico por Cinemática Directa](https://via.placeholder.com/800x600.png?text=Gráfico+de+Cinemática+Directa)
+![Visualización del Brazo Robótico por Cinemática Directa](https://i.imgur.com/8z2n1rC.png)
 
 **Gráfico 2: Verificación de la Cinemática Inversa**
 > *El efector final (círculo hueco) alcanza con precisión el punto objetivo (estrella dorada), validando la solución de la IK.*
 
-![El Brazo Robótico Alcanzando un Punto Objetivo](https://via.placeholder.com/800x600.png?text=Gráfico+de+Cinemática+Inversa)
+![El Brazo Robótico Alcanzando un Punto Objetivo](https://i.imgur.com/0G1oB2g.png)
 
 ---
 
