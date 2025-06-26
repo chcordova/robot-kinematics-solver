@@ -68,99 +68,43 @@ T_i^{i-1} =
   ------------------------------------------------------------------
   ```
 
-#### **5.2. Cinemática Directa (FK): Teoría y Validación Práctica**
-La FK responde a la pregunta: *"Si conozco los ángulos de las articulaciones, ¿dónde estará el efector final?"*.
+#### **5.2. Cinemática Directa (FK)**
+La FK responde a la pregunta: *"Si conozco los ángulos de las articulaciones, ¿dónde estará el efector final?"*. Se resuelve mediante el producto de matrices de transformación.
+  ```
+  T₃⁰ = T₁⁰(θ₁) · T₂¹(θ₂) · T₃²(θ₃)
+  ```
+Para el caso de estudio con los ángulos `{40°, 60°, -50°}`, el resultado final es:
+  ```
+  T₃⁰ = 
+  ⎡  0.174   0.985   0.000   10.632 ⎤
+  ⎢ -0.150   0.087  -0.985    8.921 ⎥
+  ⎢  0.985  -0.174   0.000   21.781 ⎥
+  ⎣  0       0       0        1     ⎦
+  ```
+* **Posición del efector final:** (x, y, z) = (10.632, 8.921, 21.781)
 
-* **Procedimiento Matemático Matricial**
-    El método consiste en multiplicar secuencialmente las matrices de transformación para encontrar la transformación total desde la base ($S_0$) hasta el efector final ($S_3$). La ecuación fundamental es:
-      ```
-      T₃⁰ = T₁⁰(θ₁) · T₂¹(θ₂) · T₃²(θ₃)
-      ```
-    Para nuestro caso de estudio con los ángulos `{40°, 60°, -50°}`, se construyen las matrices individuales:
-      ```
-      T₁⁰ =                        T₂¹ =                         T₃² =
-      ⎡ 0.766   0     0.643    0   ⎤   ⎡ 0.5   -0.866   0     6      ⎤   ⎡ 0.643   0.766   0     5.144  ⎤
-      ⎢ 0.643   0    -0.766    0   ⎥   ⎢ 0.866  0.5     0    10.392  ⎥   ⎢-0.766   0.643   0    -6.128  ⎥
-      ⎢ 0       1     0       10   ⎥   ⎢ 0      0       1     0      ⎥   ⎢ 0       0       1     0      ⎥
-      ⎣ 0       0     0        1   ⎦   ⎣ 0      0       0     1      ⎦   ⎣ 0       0       0     1      ⎦
-      ```
-    El producto de estas matrices da como resultado la matriz de transformación total:
-      ```
-      T₃⁰ = 
-      ⎡  0.174   0.985   0.000   10.632 ⎤
-      ⎢ -0.150   0.087  -0.985    8.921 ⎥
-      ⎢  0.985  -0.174   0.000   21.781 ⎥
-      ⎣  0       0       0        1     ⎦
-      ```
-    De esta matriz se extrae la posición cartesiana del efector final: **(x, y, z) = (10.632, 8.921, 21.781)**.
-
-* **Implementación en Python (FK)**
-    <details>
-    <summary>Ver código Python</summary>
-    
-    ```python
-    def dh_matrix(theta, d, a, alpha):
-        # Construye la matriz de transformación homogénea (4x4)
-        alpha_rad = np.deg2rad(alpha)
-        ct, st = np.cos(theta), np.sin(theta)
-        ca, sa = np.cos(alpha_rad), np.sin(alpha_rad)
-        T = np.array([
-            [ct, -st * ca, st * sa, a * ct],
-            [st, ct * ca, -ct * sa, a * st],
-            [0, sa, ca, d],
-            [0, 0, 0, 1]
-        ])
-        return T
-
-    def forward_kinematics(thetas, dh_table):
-        # Resuelve el Problema Cinemático Directo (PCD)
-        T_acumulada = np.identity(4)
-        joint_positions = [np.array([0, 0, 0])]
-        for i in range(len(thetas)):
-            d, a, alpha = dh_table[i, 1:]
-            T = dh_matrix(thetas[i], d, a, alpha)
-            T_acumulada = T_acumulada @ T
-            pos_actual = T_acumulada[:3, 3]
-            joint_positions.append(pos_actual)
-        return joint_positions[-1], joint_positions
-    ```
-    </details>
-
-#### **5.3. Cinemática Inversa (IK): Teoría y Validación Práctica**
+#### **5.3. Cinemática Inversa (IK)**
 La IK responde a la pregunta: *"Para que el efector final alcance un punto (x, y, z), ¿qué ángulos deben tener las articulaciones?"*.
 
-* **Procedimiento Teórico-Matricial y Geométrico**
-    Teóricamente, la IK se resuelve despejando las variables angulares de la ecuación $T_{3}^{0} = T_{obj}$. Un enfoque matricial consiste en pre-multiplicar la ecuación por la inversa de cada matriz para aislar las articulaciones. Si bien este es el fundamento, para un robot de 3 GDL es más eficiente implementar una **solución geométrica**. Este método se detalla a continuación:
+* **Procedimiento Teórico: Inversión Matricial**
+    Teóricamente, una vez que se tiene la ecuación `T₃⁰ = T_obj`, donde `T_obj` es la matriz de posición y orientación objetivo, la IK se resuelve despejando las variables angulares. El enfoque matricial consiste en pre-multiplicar la ecuación por la inversa de cada matriz para aislar las articulaciones secuencialmente. El proceso es el siguiente:
+    1.  **Aislar la cadena de las últimas articulaciones:** Se pre-multiplica toda la ecuación por la inversa de la primera transformación, `(T₁⁰)⁻¹`.
+        ```
+        (T₁⁰)⁻¹ · T_obj = T₂¹(θ₂) · T₃²(θ₃)
+        ```
+        En este punto, el lado izquierdo contiene la variable `θ₁` y los valores conocidos de `T_obj`, mientras que el lado derecho contiene las variables `θ₂` y `θ₃`. Igualando los elementos de ambas matrices se puede resolver para `θ₁`.
+    2.  **Aislar la última articulación:** Una vez conocido `θ₁`, se puede calcular numéricamente el lado izquierdo de la ecuación anterior. Luego, se repite el proceso para `T₂¹`.
+        ```
+        (T₂¹)⁻¹ · (T₁⁰)⁻¹ · T_obj = T₃²(θ₃)
+        ```
+        Ahora, el lado izquierdo es completamente numérico y el lado derecho solo depende de `θ₃`, que puede ser despejado. Este proceso permite resolver algebraicamente para cada ángulo.
 
-    1.  **Cálculo del Ángulo de la Base (θ₁):** Se calcula proyectando el punto objetivo (x, y) sobre el plano base.
-        ```
-        θ₁ = atan2(y, x)
-        ```
-    2.  **Reducción del Problema a 2D:** Se transforma el problema 3D en un triángulo planar 2D. Para ello se calculan:
-        * La distancia radial al punto: `r = √(x² + y²)`
-        * La altura efectiva desde el "hombro": `z' = z - L₁`
-        * La distancia directa entre el hombro y la muñeca: `d = √(r² + z'²)`
-    3.  **Resolución del Triángulo Planar (Ley de Cosenos):** Se resuelven los ángulos internos del triángulo formado por los eslabones L₂ y L₃.
-        * `α = atan2(z', r)`
-        * `β = arccos((d² + L₂² - L₃²) / (2 · d · L₂))`
-        * `θ₃ = -arccos((d² - L₂² - L₃²) / (2 · L₂ · L₃))`
-    4.  **Cálculo de θ₂:** Se combinan los ángulos para obtener la solución final para la configuración "codo arriba".
-        ```
-        θ₂ = α + β
-        ```
+* **Enfoque Práctico: Solución Geométrica**
+    Aunque el método matricial es teóricamente robusto, su resolución algebraica puede ser muy compleja. Para un robot de 3 GDL como el nuestro, es más eficiente y práctico implementar una **solución geométrica** basada en el desacoplamiento cinemático, que se detalla en la implementación de Python.
 
-* **Validación del Modelo (Ciclo Completo)**
-    Se realiza un ciclo completo para verificar la consistencia del modelo:
-    1.  **Entrada FK:** Se parte de los ángulos `{θ₁, θ₂, θ₃} = {40°, 60°, -50°}`.
-    2.  **Salida FK:** El cálculo de la cinemática directa nos da la posición `P = (10.632, 8.921, 21.781)`.
-    3.  **Entrada IK:** Se utiliza la posición `P` como objetivo para la cinemática inversa.
-    4.  **Salida IK y Verificación:** La función devuelve los ángulos `{θ'₁, θ'₂, θ'₃} = {40°, 60°, -50°}`.
-    
-    Al ser los ángulos de salida idénticos a los de entrada, se confirma que el modelo es matemáticamente correcto.
-
-* **Implementación en Python (IK)**
+* **Implementación en Python**
     <details>
-    <summary>Ver código Python de Cinemática Inversa</summary>
+    <summary>Ver código Python</summary>
     
     ```python
     def inverse_kinematics(target_pos, lengths, elbow_config='up'):
@@ -184,36 +128,22 @@ La IK responde a la pregunta: *"Para que el efector final alcance un punto (x, y
     ```
     </details>
 
+#### **5.4. Proceso de Validación (Ciclo Completo)**
+Para demostrar la consistencia y correctitud del modelo, se realiza una validación de ciclo completo:
+1.  **Paso 1 (Entrada FK):** Se parte de un conjunto de ángulos conocidos.
+    * `θ = {40°, 60°, -50°}`
+2.  **Paso 2 (Salida FK):** Se aplica la cinemática directa para encontrar la posición cartesiana.
+    * `P_calculada = (10.632, 8.921, 21.781)`
+3.  **Paso 3 (Entrada IK):** Se utiliza la posición `P_calculada` como el punto objetivo para la cinemática inversa.
+    * `P_objetivo = (10.632, 8.921, 21.781)`
+4.  **Paso 4 (Salida IK y Verificación):** El algoritmo de cinemática inversa calcula los ángulos necesarios.
+    * `θ' = {40.0°, 60.0°, -50.0°}`
+
+Como los ángulos finales (`θ'`) son idénticos a los iniciales (`θ`), se concluye que el modelo cinemático es correcto y consistente.
+
 ---
 
 ### 📊 6. Resultados y Validación Visual
-
-La validación numérica se complementa con la visualización gráfica, implementada con el siguiente código:
-<details>
-<summary>Ver código Python de Visualización</summary>
-
-```python
-def plot_arm(joint_positions, target=None):
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(111, projection='3d')
-    points = np.array(joint_positions)
-    # Dibuja los eslabones y articulaciones
-    ax.plot(points[:, 0], points[:, 1], points[:, 2], 'o-', color='purple', lw=4, markersize=10, markerfacecolor='blue', label='Eslabones y Articulaciones')
-    # Dibuja el efector final
-    final_joint = points[-1]
-    ax.scatter(final_joint[0], final_joint[1], final_joint[2], s=350, facecolors='none', edgecolors='darkviolet', lw=2, zorder=4, label='Efector Final')
-    # Dibuja el punto objetivo
-    if target is not None:
-        ax.scatter(target[0], target[1], target[2], c='gold', s=250, marker='*', label='Objetivo', zorder=3, edgecolor='black')
-    # Configuración del entorno gráfico
-    ax.set_xlabel('Eje X (cm)'); ax.set_ylabel('Eje Y (cm)'); ax.set_zlabel('Eje Z (cm)')
-    ax.set_title('Simulador Robótico 3-DOF (Enfoque Matricial DH)')
-    max_range = sum([L1, L2, L3])
-    ax.set_xlim([-max_range, max_range]); ax.set_ylim([-max_range, max_range]); ax.set_zlim([0, max_range])
-    ax.legend(); ax.grid(True)
-    plt.show()
-```
-</details>
 
 **Gráfico 1: Visualización por Cinemática Directa**
 > *Configuración del brazo para los ángulos de entrada {40°, 60°, -50°}.*
