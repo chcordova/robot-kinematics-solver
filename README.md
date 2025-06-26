@@ -1,4 +1,4 @@
-# 🤖 **Informe Técnico: Análisis y Simulación Cinemática de un Brazo Robótico 3-GDL**
+# 🤖 Informe Técnico: Análisis y Simulación Cinemática de un Brazo Robótico 3-GDL
 
 ---
 
@@ -8,7 +8,7 @@
 
 ---
 
-## 📜 **Índice del Proyecto**
+## 📜 Índice del Proyecto
 
 1. [Introducción](#1-introducción)
 2. [Aplicaciones](#2-aplicaciones)
@@ -29,18 +29,18 @@ La cinemática robótica establece la relación matemática entre las configurac
 
 ## 🌟 2. Aplicaciones
 
-🔧 **Industria:** Planificación de trayectorias y automatización.
-🎓 **Educación:** Enseñanza de principios de cinemática y robótica.
-🔬 **Investigación:** Simulación, validación de algoritmos y prototipado virtual.
+* 🔧 **Industria:** Planificación de trayectorias y automatización.
+* 🎓 **Educación:** Enseñanza de principios de cinemática y robótica.
+* 🔬 **Investigación:** Simulación, validación de algoritmos y prototipado virtual.
 
 ---
 
 ## ✅ 3. Objetivos
 
-🎯 Diseñar el modelo geométrico de un robot RRR de 3 GDL.
-💻 Implementar los algoritmos de Cinemática Directa e Inversa en Python.
-📈 Visualizar y validar el comportamiento del brazo en simulaciones.
-📝 Documentar resultados, enfoques y validaciones.
+* 🎯 Diseñar el modelo geométrico de un robot RRR de 3 GDL.
+* 💻 Implementar los algoritmos de Cinemática Directa e Inversa en Python.
+* 📈 Visualizar y validar el comportamiento del brazo en simulaciones.
+* 📝 Documentar resultados, enfoques y validaciones.
 
 ---
 
@@ -50,7 +50,7 @@ El análisis se enfoca exclusivamente en la **cinemática** del manipulador, exc
 
 ### 📐 Matriz General de D-H
 
-```
+```text
 Tᵢ⁽ⁱ⁻¹⁾ =
 ⎡ cos(θᵢ)  -sin(θᵢ)cos(αᵢ)   sin(θᵢ)sin(αᵢ)   aᵢ·cos(θᵢ) ⎤
 ⎢ sin(θᵢ)   cos(θᵢ)cos(αᵢ)  -cos(θᵢ)sin(αᵢ)   aᵢ·sin(θᵢ) ⎥
@@ -65,21 +65,18 @@ Tᵢ⁽ⁱ⁻¹⁾ =
 ### 5.1 Modelo Geométrico y Parametrización D-H
 
 📏 **Dimensiones de Eslabones:**
-• L₁ = 10 cm
-• L₂ = 12 cm
-• L₃ = 8 cm
+
+* L₁ = 10 cm
+* L₂ = 12 cm
+* L₃ = 8 cm
 
 📊 **Tabla D-H:**
 
-```
-┌─────┬───────────────┬────────┬───────┬────────────┐
-│  i  │ θᵢ (variable)  │  dᵢ    │  aᵢ   │   αᵢ      │
-├─────┼───────────────┼────────┼───────┼────────────┤
-│  1  │     θ₁         │  10    │  0    │  90°      │
-│  2  │     θ₂         │   0    │  12   │   0°      │
-│  3  │     θ₃         │   0    │   8   │   0°      │
-└─────┴───────────────┴────────┴───────┴────────────┘
-```
+| i | θᵢ (variable) | dᵢ (cm) | aᵢ (cm) | αᵢ (°) |
+| - | ------------- | ------- | ------- | ------ |
+| 1 | θ₁            | 10      | 0       | 90     |
+| 2 | θ₂            | 0       | 12      | 0      |
+| 3 | θ₃            | 0       | 8       | 0      |
 
 ---
 
@@ -87,13 +84,13 @@ Tᵢ⁽ⁱ⁻¹⁾ =
 
 La FK calcula la posición del efector final dados los ángulos articulares. Se realiza el producto sucesivo de matrices de transformación:
 
-```
+```text
 T₃⁰ = T₁⁰(θ₁) · T₂¹(θ₂) · T₃²(θ₃)
 ```
 
 📍 **Ejemplo numérico (θ₁ = 40°, θ₂ = 60°, θ₃ = -50°):**
 
-```
+```text
 T₃⁰ =
 ⎡  0.174   0.985   0.000   10.632 ⎤
 ⎢ -0.150   0.087  -0.985    8.921 ⎥
@@ -101,8 +98,7 @@ T₃⁰ =
 ⎣  0       0       0        1     ⎦
 ```
 
-📌 **Posición del efector final:**
-**(x, y, z) = (10.632, 8.921, 21.781)**
+📌 **Posición del efector final:** **(x, y, z) = (10.632, 8.921, 21.781)**
 
 ---
 
@@ -110,19 +106,19 @@ T₃⁰ =
 
 La IK calcula los ángulos articulares necesarios para alcanzar una posición objetivo.
 
-#### 🧠 Enfoque Teórico: Inversión Matricial
+#### 🧠 Procedimiento Teórico: Inversión Matricial
 
 Teóricamente, una vez que se tiene la ecuación `T₃⁰ = T_obj`, donde `T_obj` es la matriz de posición y orientación objetivo, la IK se resuelve despejando las variables angulares. El enfoque matricial consiste en pre-multiplicar la ecuación por la inversa de cada matriz para aislar las articulaciones secuencialmente:
 
 1. **Aislar la cadena de las últimas articulaciones:**
 
-```
+```text
 (T₁⁰)⁻¹ · T_obj = T₂¹(θ₂) · T₃²(θ₃)
 ```
 
 2. **Aislar la última articulación:**
 
-```
+```text
 (T₂¹)⁻¹ · (T₁⁰)⁻¹ · T_obj = T₃²(θ₃)
 ```
 
