@@ -7,9 +7,6 @@
 3.  [**Objetivos**](#-3-objetivos)
 4.  [**Alcance del Análisis Cinemático**](#-4-alcance-del-análisis-cinemático)
 5.  [**Desarrollo y Análisis Cinemático**](#-5-desarrollo-y-análisis-cinemático)
-    * [5.1. Modelo Geométrico y Parametrización D-H](#51-modelo-geométrico-y-parametrización-d-h)
-    * [5.2. Cinemática Directa (FK): Teoría y Validación Práctica](#52-cinemática-directa-fk-teoría-y-validación-práctica)
-    * [5.3. Cinemática Inversa (IK): Teoría y Validación Práctica](#53-cinemática-inversa-ik-teoría-y-validación-práctica)
 6.  [**Resultados y Validación Visual**](#-6-resultados-y-validación-visual)
 7.  [**Conclusiones**](#-7-conclusiones)
 8.  [**Anexos**](#-8-anexos)
@@ -19,7 +16,7 @@
 ### 📖 1. Introducción
 En el marco del curso **Recursos Computacionales**, se desarrolla este proyecto aplicado. La cinemática robótica es la base para el control de cualquier manipulador, permitiendo relacionar la configuración de sus articulaciones con la posición de su efector final en el espacio. Para lograr un modelo matemático robusto y estandarizado, se recurre a la convención **Denavit-Hartenberg (D-H)**, descrita en nuestra documentación como un "GPS universal para brazos robóticos". Este método ofrece un formalismo para describir la geometría de cualquier robot de cadena abierta con solo cuatro parámetros por eslabón.
 
-Este informe detalla el proceso completo de diseño, modelado matemático y simulación de un brazo robótico de **$3$ Grados de Libertad (GDL)** de tipo RRR (Rotacional-Rotacional-Rotacional), aplicando el formalismo de Denavit-Hartenberg para resolver tanto la cinemática directa como la inversa.
+Este informe detalla el proceso completo de diseño, modelado matemático y simulación de un brazo robótico de **3 Grados de Libertad (GDL)** de tipo RRR (Rotacional-Rotacional-Rotacional), aplicando el formalismo de Denavit-Hartenberg para resolver tanto la cinemática directa como la inversa.
 
 ---
 
@@ -33,7 +30,7 @@ El modelo desarrollado es una herramienta fundamental con aplicaciones en:
 
 ### ✅ 3. Objetivos
 Los objetivos del proyecto, basados en el roadmap, son:
-* **Diseñar** un modelo geométrico y matemático funcional para un brazo robótico de $3$ GDL.
+* **Diseñar** un modelo geométrico y matemático funcional para un brazo robótico de 3 GDL.
 * **Implementar** un simulador en `Python` para calcular la **Cinemática Directa (FK)** y la **Cinemática Inversa (IK)**.
 * **Visualizar** los movimientos del brazo para validar el modelo cinemático.
 * **Documentar** el proceso y presentar los resultados obtenidos.
@@ -41,53 +38,65 @@ Los objetivos del proyecto, basados en el roadmap, son:
 ---
 
 ### 📏 4. Alcance del Análisis Cinemático
-El alcance de este proyecto se centra en el **análisis y la implementación del modelo cinemático** del manipulador. El enfoque es matricial, utilizando las transformaciones homogéneas de Denavit-Hartenberg. La matriz genérica que describe la transformación entre eslabones consecutivos ($T_{i}^{i-1}$) y que forma la base de nuestro análisis es:
-
-![Matriz de Transformación Homogénea D-H](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/dh_matrix.svg)
-
-El proyecto aborda tanto la cinemática directa como la inversa, limitado a una simulación virtual sin considerar dinámicas ni colisiones.
+El proyecto se enfoca en el análisis cinemático mediante transformaciones homogéneas. La matriz genérica de Denavit-Hartenberg que describe la transformación entre eslabones consecutivos es:
+```
+T_i^{i-1} = 
+⎡ cos(θᵢ)  -sin(θᵢ)cos(αᵢ)   sin(θᵢ)sin(αᵢ)   aᵢ cos(θᵢ) ⎤
+⎢ sin(θᵢ)   cos(θᵢ)cos(αᵢ)  -cos(θᵢ)sin(αᵢ)   aᵢ sin(θᵢ) ⎥
+⎢   0         sin(αᵢ)          cos(αᵢ)          dᵢ      ⎥
+⎣   0           0                0               1       ⎦
+```
 
 ---
 
 ### 💻 5. Desarrollo y Análisis Cinemático
 
 #### **5.1. Modelo Geométrico y Parametrización D-H**
-La "estructura" física del robot se define matemáticamente mediante sus dimensiones y el modelo D-H.
-* **Dimensiones de los Eslabones**:
-    * $L_1 = 10 \text{ cm}$
-    * $L_2 = 12 \text{ cm}$
-    * $L_3 = 8 \text{ cm}$
+* **Dimensiones de los Eslabones:**
+    * L₁ = 10 cm
+    * L₂ = 12 cm
+    * L₃ = 8 cm
 
-* **Tabla de Parámetros D-H**:
-
-| **_i_** | **θ~i~ (rotación Z)** | **d~i~ (traslación Z)** | **a~i~ (traslación X)** | **α~i~ (rotación X)** |
-|:---:|:---:|:---:|:---:|:---:|
-| 1 | θ~1~ (variable) | _L_~1~ = 10 | 0 | 90° |
-| 2 | θ~2~ (variable) | 0 | _L_~2~ = 12 | 0° |
-| 3 | θ~3~ (variable) | 0 | _L_~3~ = 8 | 0° |
+* **Tabla de Parámetros D-H:**
+  ```
+  ------------------------------------------------------------------
+  | i |   θᵢ (variable)   |   dᵢ (traslación) |   aᵢ (longitud) |  αᵢ (torsión) |
+  |---|-------------------|------------------|----------------|---------------|
+  | 1 |        θ₁         |     L₁ = 10      |        0       |      90°      |
+  | 2 |        θ₂         |        0         |     L₂ = 12      |       0°      |
+  | 3 |        θ₃         |        0         |      L₃ = 8      |       0°      |
+  ------------------------------------------------------------------
+  ```
 
 #### **5.2. Cinemática Directa (FK): Teoría y Validación Práctica**
 La FK responde a la pregunta: *"Si conozco los ángulos de las articulaciones, ¿dónde estará el efector final?"*.
 
 * **Procedimiento Matemático Matricial**
-    El método consiste en multiplicar secuencialmente las matrices de transformación para encontrar la transformación total. La ecuación fundamental es:
-    ![Ecuación de Cinemática Directa](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/fk_equation.svg)
-
-* **Caso de Estudio Práctico (FK)**
-    Para la configuración articular de ejemplo $\{\theta_1, \theta_2, \theta_3\} = \{40^\circ, 60^\circ, -50^\circ\}$, las matrices individuales son:
-
-    ![Matrices de Transformación Individuales](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/individual_matrices.svg)
-
+    El método consiste en multiplicar secuencialmente las matrices de transformación para encontrar la transformación total desde la base ($S_0$) hasta el efector final ($S_3$). La ecuación fundamental es:
+      ```
+      T₃⁰ = T₁⁰(θ₁) · T₂¹(θ₂) · T₃²(θ₃)
+      ```
+    Para nuestro caso de estudio con los ángulos `{40°, 60°, -50°}`, se construyen las matrices individuales:
+      ```
+      T₁⁰ =                        T₂¹ =                         T₃² =
+      ⎡ 0.766   0     0.643    0   ⎤   ⎡ 0.5   -0.866   0     6      ⎤   ⎡ 0.643   0.766   0     5.144  ⎤
+      ⎢ 0.643   0    -0.766    0   ⎥   ⎢ 0.866  0.5     0    10.392  ⎥   ⎢-0.766   0.643   0    -6.128  ⎥
+      ⎢ 0       1     0       10   ⎥   ⎢ 0      0       1     0      ⎥   ⎢ 0       0       1     0      ⎥
+      ⎣ 0       0     0        1   ⎦   ⎣ 0      0       0     1      ⎦   ⎣ 0       0       0     1      ⎦
+      ```
     El producto de estas matrices da como resultado la matriz de transformación total:
-
-    ![Matriz de Transformación Total FK](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/total_fk_matrix.svg)
-
-    De esta matriz se extrae la posición cartesiana del efector final: **$(x, y, z) = (10.632, 8.921, 21.781)$**.
+      ```
+      T₃⁰ = 
+      ⎡  0.174   0.985   0.000   10.632 ⎤
+      ⎢ -0.150   0.087  -0.985    8.921 ⎥
+      ⎢  0.985  -0.174   0.000   21.781 ⎥
+      ⎣  0       0       0        1     ⎦
+      ```
+    De esta matriz se extrae la posición cartesiana del efector final: **(x, y, z) = (10.632, 8.921, 21.781)**.
 
 * **Implementación en Python (FK)**
-    Este procedimiento se automatiza con el siguiente código, extraído de la biblioteca del proyecto.
     <details>
-    <summary>Ver código Python de Cinemática Directa</summary>
+    <summary>Ver código Python</summary>
     
     ```python
     def dh_matrix(theta, d, a, alpha):
@@ -104,12 +113,12 @@ La FK responde a la pregunta: *"Si conozco los ángulos de las articulaciones, �
         return T
 
     def forward_kinematics(thetas, dh_table):
+        # Resuelve el Problema Cinemático Directo (PCD)
         T_acumulada = np.identity(4)
         joint_positions = [np.array([0, 0, 0])]
         for i in range(len(thetas)):
-            d, a, alpha = dh_table.iloc[[i]].values.flatten()[1:]
-            theta = thetas.iloc[[i]].values.flatten()[0]
-            T = dh_matrix(theta, d, a, alpha)
+            d, a, alpha = dh_table[i, 1:]
+            T = dh_matrix(thetas[i], d, a, alpha)
             T_acumulada = T_acumulada @ T
             pos_actual = T_acumulada[:3, 3]
             joint_positions.append(pos_actual)
@@ -118,17 +127,36 @@ La FK responde a la pregunta: *"Si conozco los ángulos de las articulaciones, �
     </details>
 
 #### **5.3. Cinemática Inversa (IK): Teoría y Validación Práctica**
-La IK responde a la pregunta: *"Para que el efector final alcance un punto $(x, y, z)$, ¿qué ángulos deben tener las articulaciones?"*.
+La IK responde a la pregunta: *"Para que el efector final alcance un punto (x, y, z), ¿qué ángulos deben tener las articulaciones?"*.
 
-* **Procedimiento Teórico**
-    Un enfoque matricial consiste en despejar las variables angulares de la ecuación $T_{3}^{0} = T_{obj}$, pre-multiplicando por la inversa de cada matriz:
-    ![Ecuación de Cinemática Inversa](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/ik_equation.svg)
-    Sin embargo, para un robot de 3 GDL, es más eficiente y práctico implementar una **solución geométrica**. Este método se basa en el desacoplamiento cinemático, reduciendo el problema 3D a un problema planar 2D que se resuelve con las siguientes relaciones trigonométricas:
-    1.  **Cálculo de $\theta_1$:** Se calcula proyectando el objetivo en el plano XY.
-        ![Cálculo de Theta 1](https://latex.codecogs.com/svg.latex?%5Cbg_white%20\theta_1%20=%20%5Coperatorname{atan2}(y,%20x))
-    2.  **Reducción a 2D:** Se calculan las distancias auxiliares $r$ (distancia radial) y $z'$ (altura efectiva).
-        ![Cálculo de r y z_prime](https://latex.codecogs.com/svg.latex?%5Cbg_white%20r%20=%20%5Csqrt{x^2%20+%20y^2}%20%5Cquad%20;%20%5Cquad%20z'%20=%20z%20-%20L_1)
-    3.  **Resolución del Triángulo Planar:** Se utiliza la Ley de los Cosenos para resolver el triángulo formado por los eslabones $L_2$ y $L_3$. Esto permite encontrar los ángulos $\theta_2$ y $\theta_3$, considerando las dos posibles soluciones ("codo arriba" y "codo abajo").
+* **Procedimiento Teórico-Matricial y Geométrico**
+    Teóricamente, la IK se resuelve despejando las variables angulares de la ecuación $T_{3}^{0} = T_{obj}$. Un enfoque matricial consiste en pre-multiplicar la ecuación por la inversa de cada matriz para aislar las articulaciones. Si bien este es el fundamento, para un robot de 3 GDL es más eficiente implementar una **solución geométrica**. Este método se detalla a continuación:
+
+    1.  **Cálculo del Ángulo de la Base (θ₁):** Se calcula proyectando el punto objetivo (x, y) sobre el plano base.
+        ```
+        θ₁ = atan2(y, x)
+        ```
+    2.  **Reducción del Problema a 2D:** Se transforma el problema 3D en un triángulo planar 2D. Para ello se calculan:
+        * La distancia radial al punto: `r = √(x² + y²)`
+        * La altura efectiva desde el "hombro": `z' = z - L₁`
+        * La distancia directa entre el hombro y la muñeca: `d = √(r² + z'²)`
+    3.  **Resolución del Triángulo Planar (Ley de Cosenos):** Se resuelven los ángulos internos del triángulo formado por los eslabones L₂ y L₃.
+        * `α = atan2(z', r)`
+        * `β = arccos((d² + L₂² - L₃²) / (2 · d · L₂))`
+        * `θ₃ = -arccos((d² - L₂² - L₃²) / (2 · L₂ · L₃))`
+    4.  **Cálculo de θ₂:** Se combinan los ángulos para obtener la solución final para la configuración "codo arriba".
+        ```
+        θ₂ = α + β
+        ```
+
+* **Validación del Modelo (Ciclo Completo)**
+    Se realiza un ciclo completo para verificar la consistencia del modelo:
+    1.  **Entrada FK:** Se parte de los ángulos `{θ₁, θ₂, θ₃} = {40°, 60°, -50°}`.
+    2.  **Salida FK:** El cálculo de la cinemática directa nos da la posición `P = (10.632, 8.921, 21.781)`.
+    3.  **Entrada IK:** Se utiliza la posición `P` como objetivo para la cinemática inversa.
+    4.  **Salida IK y Verificación:** La función devuelve los ángulos `{θ'₁, θ'₂, θ'₃} = {40°, 60°, -50°}`.
+    
+    Al ser los ángulos de salida idénticos a los de entrada, se confirma que el modelo es matemáticamente correcto.
 
 * **Implementación en Python (IK)**
     <details>
@@ -144,48 +172,69 @@ La IK responde a la pregunta: *"Para que el efector final alcance un punto $(x, 
         d = np.sqrt(r**2 + z_prime**2)
         if d > L2 + L3 or d < abs(L2 - L3): return None
         alpha = np.arctan2(z_prime, r)
-        beta_cos_val = (d**2 + L2**2 - L3**2) / (2 * d * L2)
-        beta = np.arccos(np.clip(beta_cos_val, -1.0, 1.0))
+        beta = np.arccos(np.clip((d**2 + L2**2 - L3**2)/(2*d*L2), -1.0, 1.0))
         cos_theta3 = (d**2 - L2**2 - L3**2) / (2 * L2 * L3)
         if elbow_config == 'up':
             theta2 = alpha + beta
             theta3 = -np.arccos(np.clip(cos_theta3, -1.0, 1.0))
-        else: # 'down'
+        else:
             theta2 = alpha - beta
             theta3 = np.arccos(np.clip(cos_theta3, -1.0, 1.0))
-        return pd.Series([theta1, theta2, theta3], index=['theta1', 'theta2', 'theta3'])
+        return [theta1, theta2, theta3]
     ```
     </details>
 
-* **Validación del Modelo (IK)**
-    Al usar la posición objetivo $(10.632, 8.921, 21.781)$, el código de la IK calcula los ángulos articulares, resultando en $\{\theta_1, \theta_2, \theta_3\} = \{40.0^\circ, 60.0^\circ, -50.0^\circ\}$, que son idénticos a los ángulos de entrada originales.
+---
+
+### 📊 6. Resultados y Validación Visual
+
+La validación numérica se complementa con la visualización gráfica, implementada con el siguiente código:
+<details>
+<summary>Ver código Python de Visualización</summary>
+
+```python
+def plot_arm(joint_positions, target=None):
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    points = np.array(joint_positions)
+    # Dibuja los eslabones y articulaciones
+    ax.plot(points[:, 0], points[:, 1], points[:, 2], 'o-', color='purple', lw=4, markersize=10, markerfacecolor='blue', label='Eslabones y Articulaciones')
+    # Dibuja el efector final
+    final_joint = points[-1]
+    ax.scatter(final_joint[0], final_joint[1], final_joint[2], s=350, facecolors='none', edgecolors='darkviolet', lw=2, zorder=4, label='Efector Final')
+    # Dibuja el punto objetivo
+    if target is not None:
+        ax.scatter(target[0], target[1], target[2], c='gold', s=250, marker='*', label='Objetivo', zorder=3, edgecolor='black')
+    # Configuración del entorno gráfico
+    ax.set_xlabel('Eje X (cm)'); ax.set_ylabel('Eje Y (cm)'); ax.set_zlabel('Eje Z (cm)')
+    ax.set_title('Simulador Robótico 3-DOF (Enfoque Matricial DH)')
+    max_range = sum([L1, L2, L3])
+    ax.set_xlim([-max_range, max_range]); ax.set_ylim([-max_range, max_range]); ax.set_zlim([0, max_range])
+    ax.legend(); ax.grid(True)
+    plt.show()
+```
+</details>
+
+**Gráfico 1: Visualización por Cinemática Directa**
+> *Configuración del brazo para los ángulos de entrada {40°, 60°, -50°}.*
+
+``
+
+**Gráfico 2: Validación de Cinemática Inversa**
+> *El efector final alcanza con precisión el punto objetivo.*
+
+``
 
 ---
 
-### 📊 **6. Resultados y Validación Visual**
-La validación numérica se complementa con la visualización gráfica del simulador.
-
-**Gráfico 1: Visualización del Brazo por Cinemática Directa**
-> *Posición del brazo para los ángulos de entrada $\{\theta_1, \theta_2, \theta_3\} = \{40^\circ, 60^\circ, -50^\circ\}$. Valida que el cálculo de la FK es correcto.*
-
-![Visualización del Brazo Robótico por Cinemática Directa](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/fk_arm_visualization.png)
-
-**Gráfico 2: Verificación de la Cinemática Inversa**
-> *El efector final (círculo hueco) alcanza con precisión el punto objetivo (estrella dorada), validando la solución de la IK.*
-
-![El Brazo Robótico Alcanzando un Punto Objetivo](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/ik_validation.png)
+### 🏁 7. Conclusiones
+* Se desarrolló exitosamente el modelo matemático y computacional de un brazo robótico de 3 GDL.
+* Las implementaciones de FK e IK en Python validaron el modelo teórico de forma precisa.
+* La simulación confirmó la coherencia entre la teoría, el desarrollo matemático y el resultado numérico a través de un caso de estudio práctico.
 
 ---
 
-### 🏁 **7. Conclusiones**
-* Se diseñó y validó con éxito un modelo matemático para un brazo robótico de $3$ GDL utilizando la convención Denavit-Hartenberg.
-* Se implementaron en `Python` funciones robustas para la cinemática directa e inversa.
-* La validación de ciclo completo (FK → IK) confirmó la consistencia y precisión del simulador.
-* El proyecto constituye una base sólida y escalable para futuras aplicaciones en robótica.
-
----
-
-### 📎 **8. Anexos**
-* **Anexo A:** Código fuente completo en `Python`.
-* **Anexo B:** Esquemas detallados de los sistemas de coordenadas asignados.
-* **Anexo C:** Gráficos y capturas de pantalla de la simulación.
+### 📎 8. Anexos
+* **Anexo A:** Código fuente completo en Python
+* **Anexo B:** Esquemas de coordenadas D-H
+* **Anexo C:** Capturas del simulador
