@@ -50,13 +50,12 @@ Los objetivos del proyecto, basados en el roadmap, son:
 
 El proyecto se enfoca en el **análisis cinemático** mediante transformaciones homogéneas. La matriz genérica de Denavit-Hartenberg que describe la transformación entre eslabones consecutivos es:
 
-```latex
-T_i^{i-1} = [
- [cos(θ_i), -sin(θ_i)cos(α_i), sin(θ_i)sin(α_i), a_i cos(θ_i)],
- [sin(θ_i), cos(θ_i)cos(α_i), -cos(θ_i)sin(α_i), a_i sin(θ_i)],
- [0, sin(α_i), cos(α_i), d_i],
- [0, 0, 0, 1]
-]
+```
+T_i^{i-1} =
+⎡ cos(θᵢ)  -sin(θᵢ)cos(αᵢ)   sin(θᵢ)sin(αᵢ)   aᵢ cos(θᵢ) ⎤
+⎢ sin(θᵢ)   cos(θᵢ)cos(αᵢ)  -cos(θᵢ)sin(αᵢ)   aᵢ sin(θᵢ) ⎥
+⎢   0         sin(αᵢ)          cos(αᵢ)          dᵢ      ⎥
+⎣   0           0                0               1       ⎦
 ```
 
 ---
@@ -67,60 +66,56 @@ T_i^{i-1} = [
 
 **Dimensiones de los Eslabones:**
 
-* L1 = 10 cm
-* L2 = 12 cm
-* L3 = 8 cm
+* L₁ = 10 cm
+* L₂ = 12 cm
+* L₃ = 8 cm
 
 **Tabla de Parámetros D-H:**
 
-| i | θ\_i (variable) | d\_i | a\_i | α\_i |
-| - | --------------- | ---- | ---- | ---- |
-| 1 | θ₁              | 10   | 0    | 90°  |
-| 2 | θ₂              | 0    | 12   | 0°   |
-| 3 | θ₃              | 0    | 8    | 0°   |
+| i | θᵢ (variable) | dᵢ | aᵢ | αᵢ  |
+| - | ------------- | -- | -- | --- |
+| 1 | θ₁            | 10 | 0  | 90° |
+| 2 | θ₂            | 0  | 12 | 0°  |
+| 3 | θ₃            | 0  | 8  | 0°  |
 
 #### 5.2. Cinemática Directa (FK)
 
 **Ecuación General:**
 
-```latex
-T_3^0 = T_1^0(θ_1) ⋅ T_2^1(θ_2) ⋅ T_3^2(θ_3)
+```
+T₃⁰ = T₁⁰(θ₁) · T₂¹(θ₂) · T₃²(θ₃)
 ```
 
 **Matrices de Transformación Ejemplo:**
 
-```latex
-T_1^0 = [
- [0.766, 0, 0.643, 0],
- [0.643, 0, -0.766, 0],
- [0, 1, 0, 10],
- [0, 0, 0, 1]
-]
+```
+T₁⁰ =
+⎡ 0.766   0     0.643    0   ⎤
+⎢ 0.643   0    -0.766    0   ⎥
+⎢ 0       1     0       10   ⎥
+⎣ 0       0     0        1   ⎦
 
-T_2^1 = [
- [0.5, -0.866, 0, 6],
- [0.866, 0.5, 0, 10.392],
- [0, 0, 1, 0],
- [0, 0, 0, 1]
-]
+T₂¹ =
+⎡ 0.5   -0.866   0     6      ⎤
+⎢ 0.866  0.5     0    10.392  ⎥
+⎢ 0      0       1     0      ⎥
+⎣ 0      0       0     1      ⎦
 
-T_3^2 = [
- [0.643, 0.766, 0, 5.144],
- [-0.766, 0.643, 0, -6.128],
- [0, 0, 1, 0],
- [0, 0, 0, 1]
-]
+T₃² =
+⎡ 0.643   0.766   0     5.144  ⎤
+⎢-0.766   0.643   0    -6.128  ⎥
+⎢ 0       0       1     0      ⎥
+⎣ 0       0       0     1      ⎦
 ```
 
 **Resultado Final:**
 
-```latex
-T_3^0 = [
- [0.174, 0.985, 0.000, 10.632],
- [-0.150, 0.087, -0.985, 8.921],
- [0.985, -0.174, 0.000, 21.781],
- [0, 0, 0, 1]
-]
+```
+T₃⁰ =
+⎡  0.174   0.985   0.000   10.632 ⎤
+⎢ -0.150   0.087  -0.985    8.921 ⎥
+⎢  0.985  -0.174   0.000   21.781 ⎥
+⎣  0       0       0        1     ⎦
 ```
 
 **Posición del efector final:** (x, y, z) = (10.632, 8.921, 21.781)
