@@ -2,17 +2,17 @@
 
 ## 📜 **Índice del Proyecto**
 
-1.  [[**Introducción**](#-1-introducción)
-2.  [[**Aplicaciones**](#-2-aplicaciones)
-3.  [[**Objetivos**](#-3-objetivos)
-4.  [[**Alcance del Análisis Cinemático**](#-4-alcance-del-análisis-cinemático)
-5.  [[**Desarrollo y Análisis Cinemático**](#-5-desarrollo-y-análisis-cinemático)
+1.  [**Introducción**](#-1-introducción)
+2.  [**Aplicaciones**](#-2-aplicaciones)
+3.  [**Objetivos**](#-3-objetivos)
+4.  [**Alcance del Análisis Cinemático**](#-4-alcance-del-análisis-cinemático)
+5.  [**Desarrollo y Análisis Cinemático**](#-5-desarrollo-y-análisis-cinemático)
     * [5.1. Modelo Geométrico y Parametrización D-H](#51-modelo-geométrico-y-parametrización-d-h)
     * [5.2. Cinemática Directa (FK): Teoría y Validación Práctica](#52-cinemática-directa-fk-teoría-y-validación-práctica)
     * [5.3. Cinemática Inversa (IK): Teoría y Validación Práctica](#53-cinemática-inversa-ik-teoría-y-validación-práctica)
-6.  [[**Resultados y Validación Visual**](#-6-resultados-y-validación-visual)
-7.  [[**Conclusiones**](#-7-conclusiones)
-8.  [[**Anexos**](#-8-anexos)
+6.  [**Resultados y Validación Visual**](#-6-resultados-y-validación-visual)
+7.  [**Conclusiones**](#-7-conclusiones)
+8.  [**Anexos**](#-8-anexos)
 
 ---
 
@@ -43,7 +43,7 @@ Los objetivos del proyecto, basados en el roadmap, son:
 ### 📏 4. Alcance del Análisis Cinemático
 El alcance de este proyecto se centra en el **análisis y la implementación del modelo cinemático** del manipulador. El enfoque es matricial, utilizando las transformaciones homogéneas de Denavit-Hartenberg. La matriz genérica que describe la transformación entre eslabones consecutivos ($T_{i}^{i-1}$) y que forma la base de nuestro análisis es:
 
-[![Matriz de Transformación Homogénea D-H](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/dh_matrix.svg)](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/dh_matrix.svg)
+![Matriz de Transformación Homogénea D-H](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/dh_matrix.svg)
 
 El proyecto aborda tanto la cinemática directa como la inversa, limitado a una simulación virtual sin considerar dinámicas ni colisiones.
 
@@ -71,24 +71,24 @@ La FK responde a la pregunta: *"Si conozco los ángulos de las articulaciones, �
 
 * **Procedimiento Matemático Matricial**
     El método consiste en multiplicar secuencialmente las matrices de transformación para encontrar la transformación total. La ecuación fundamental es:
-    [![Ecuación de Cinemática Directa](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/fk_equation.svg)](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/fk_equation.svg)
+    ![Ecuación de Cinemática Directa](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/fk_equation.svg)
 
 * **Caso de Estudio Práctico (FK)**
     Para la configuración articular de ejemplo $\{\theta_1, \theta_2, \theta_3\} = \{40^\circ, 60^\circ, -50^\circ\}$, las matrices individuales son:
 
-    [![Matrices de Transformación Individuales](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/individual_matrices.svg)](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/individual_matrices.svg)
+    ![Matrices de Transformación Individuales](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/individual_matrices.svg)
 
     El producto de estas matrices da como resultado la matriz de transformación total:
 
-    [![Matriz de Transformación Total FK](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/total_fk_matrix.svg)](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/total_fk_matrix.svg)
+    ![Matriz de Transformación Total FK](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/total_fk_matrix.svg)
 
     De esta matriz se extrae la posición cartesiana del efector final: **$(x, y, z) = (10.632, 8.921, 21.781)$**.
 
 * **Implementación en Python (FK)**
     <details>
-    <summary>Mostrar código</summary>
+    <summary>Ver código Python</summary>
     
-    \`\`\`python
+    ```python
     def forward_kinematics(thetas, dh_table):
         T_acumulada = np.identity(4)
         joint_positions = [np.array([0, 0, 0])]
@@ -100,7 +100,7 @@ La FK responde a la pregunta: *"Si conozco los ángulos de las articulaciones, �
             pos_actual = T_acumulada[:3, 3]
             joint_positions.append(pos_actual)
         return joint_positions[-1], joint_positions
-    \`\`\`
+    ```
     </details>
 
 #### **5.3. Cinemática Inversa (IK): Teoría y Validación Práctica**
@@ -108,16 +108,16 @@ La IK responde a la pregunta: *"Para que el efector final alcance un punto $(x, 
 
 * **Procedimiento Teórico-Matricial**
     Teóricamente, una vez que se tiene la ecuación $T_{3}^{0} = T_{obj}$, la IK se resuelve despejando las variables angulares. Un enfoque matricial consiste en pre-multiplicar la ecuación por la inversa de cada matriz para aislar las articulaciones:
-    [![Ecuación de Cinemática Inversa](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/ik_equation.svg)](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/ik_equation.svg)
+    ![Ecuación de Cinemática Inversa](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/ik_equation.svg)
 
 * **Enfoque Práctico (Solución Geométrica)**
     Para este robot, es más eficiente utilizar un **método geométrico** basado en el desacoplamiento cinemático.
 
 * **Implementación en Python (IK)**
     <details>
-    <summary>Mostrar código</summary>
+    <summary>Ver código Python</summary>
     
-    \`\`\`python
+    ```python
     def inverse_kinematics(target_pos, lengths, elbow_config='up'):
         L1, L2, L3 = lengths
         x, y, z = target_pos
@@ -137,8 +137,9 @@ La IK responde a la pregunta: *"Para que el efector final alcance un punto $(x, 
             theta2 = alpha - beta
             theta3 = np.arccos(np.clip(cos_theta3, -1.0, 1.0))
         return pd.Series([theta1, theta2, theta3], index=['theta1', 'theta2', 'theta3'])
-    \`\`\`
+    ```
     </details>
+
 * **Validación del Modelo (IK)**
     Al usar la posición objetivo $(10.632, 8.921, 21.781)$, el código de la IK calcula los ángulos articulares, resultando en $\{\theta_1, \theta_2, \theta_3\} = \{40.0^\circ, 60.0^\circ, -50.0^\circ\}$, que son idénticos a los ángulos de entrada originales.
 
@@ -150,12 +151,12 @@ La validación numérica se complementa con la visualización gráfica del simul
 **Gráfico 1: Visualización del Brazo por Cinemática Directa**
 > *Posición del brazo para los ángulos de entrada $\{\theta_1, \theta_2, \theta_3\} = \{40^\circ, 60^\circ, -50^\circ\}$. Valida que el cálculo de la FK es correcto.*
 
-[![Visualización del Brazo Robótico por Cinemática Directa](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/fk_arm_visualization.png)](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/fk_arm_visualization.png)
+![Visualización del Brazo Robótico por Cinemática Directa](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/fk_arm_visualization.png)
 
 **Gráfico 2: Verificación de la Cinemática Inversa**
 > *El efector final (círculo hueco) alcanza con precisión el punto objetivo (estrella dorada), validando la solución de la IK.*
 
-[![El Brazo Robótico Alcanzando un Punto Objetivo](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/ik_validation.png)](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/ik_validation.png)
+![El Brazo Robótico Alcanzando un Punto Objetivo](https://raw.githubusercontent.com/chcordova/robot-kinematics-solver/main/docs/ik_validation.png)
 
 ---
 
