@@ -80,13 +80,11 @@ La FK responde a la pregunta: *"Si conozco los ángulos de las articulaciones, �
 * **Caso de Estudio Práctico (FK)**
     Para la configuración articular de ejemplo $\{\theta_1, \theta_2, \theta_3\} = \{40^\circ, 60^\circ, -50^\circ\}$, las matrices individuales son:
     $$
-    T_{1}^{0} = \begin{bmatrix} 0.766 & 0 & 0.643 & 0 \\ 0.643 & 0 & -0.766 & 0 \\ 0 & 1 & 0 & 10 \\ 0 & 0 & 0 & 1 \end{bmatrix}
-    $$
-    $$
-    T_{2}^{1} = \begin{bmatrix} 0.5 & -0.866 & 0 & 6 \\ 0.866 & 0.5 & 0 & 10.392 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}
-    $$
-    $$
+    \displaylines{
+    T_{1}^{0} = \begin{bmatrix} 0.766 & 0 & 0.643 & 0 \\ 0.643 & 0 & -0.766 & 0 \\ 0 & 1 & 0 & 10 \\ 0 & 0 & 0 & 1 \end{bmatrix} \\ \\
+    T_{2}^{1} = \begin{bmatrix} 0.5 & -0.866 & 0 & 6 \\ 0.866 & 0.5 & 0 & 10.392 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix} \\ \\
     T_{3}^{2} = \begin{bmatrix} 0.643 & 0.766 & 0 & 5.144 \\ -0.766 & 0.643 & 0 & -6.128 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}
+    }
     $$
     El producto de estas matrices da como resultado la matriz de transformación total:
     $$
