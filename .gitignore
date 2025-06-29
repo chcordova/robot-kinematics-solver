@@ -1,0 +1,35 @@
+# Operating System specific files (macOS)
+.DS_Store
+
+# Virtual environments
+venv/
+env/
+.env
+
+# Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Jupyter Notebooks
+.ipynb_checkpoints/  # Checkpoint folder for notebooks
+*.ipynb_checkpoints  # Old or individual checkpoint files
+
+# IDE generated files (PyCharm, VS Code)
+.idea/                 # PyCharm configuration folders
+.vscode/               # VS Code configuration folders
+*.iml                  # PyCharm module files
+*.ipr                  # PyCharm project files
+*.iws                  # PyCharm workspace files
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# Large or generated data files that should not be under version control
+# If your 3D model (data/arm_model.stl) is very large or dynamically generated,
+# and you don't want to version it, you could add it here.
+# data/arm_model.stl
