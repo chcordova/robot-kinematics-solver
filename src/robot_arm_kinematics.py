@@ -175,7 +175,7 @@ def plot_arm(ax, joint_positions, lengths, angles_deg=None, target=None, title='
     ax.plot(points[:, 0], points[:, 1], points[:, 2], '-', color='purple', lw=5, label='Eslabones', zorder=1)
     
     # Articulaciones (P1 y P2)
-    ax.scatter(points[1:-1, 0], points[1:-1, 1], points[1:-1, 2], c='blue', s=120, label='Articulaciones', zorder=2, alpha=0.9)
+    ax.scatter(points[:-1, 0], points[:-1, 1], points[:-1, 2], c='blue', s=120, label='Articulaciones', zorder=2, alpha=0.9)
     
     # Efector Final o Objetivo
     if target is not None:
