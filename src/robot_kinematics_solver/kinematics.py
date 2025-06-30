@@ -17,7 +17,7 @@ except ImportError:
     RTB_INSTALLED = False
 
 # ------------------------------------------------------------------------------
-# 2. ABSTRACT BASE CLASS (THE INTERFACE / THE "CONTRACT")
+# 2. ABSTRACT BASE CLASS
 # ------------------------------------------------------------------------------
 class KinematicsSolver(ABC):
     """
@@ -56,7 +56,7 @@ class KinematicsSolver(ABC):
         pass
 
 # ------------------------------------------------------------------------------
-# 3. CONCRETE STRATEGIES (IMPLEMENTATIONS)
+# 3. CONCRETE STRATEGIES
 # ------------------------------------------------------------------------------
 class GeometricSolver(KinematicsSolver):
     """
@@ -282,11 +282,9 @@ def plot_arm(ax, joint_positions, lengths, angles_deg=None, target=None, title='
     # Etiquetas de texto para las ARTICULACIONES
     if angles_deg is not None:
         joint_labels = ["θ₁", "θ₂", "θ₃"]
-        # Puntos correspondientes a las articulaciones donde se aplican los ángulos (P0, P1, P2)
         angle_points = points[:3]
         for i, label in enumerate(joint_labels):
             p = angle_points[i]
-            # Se añade un pequeño desfase en X y se alinea el texto a la izquierda del punto.
             ax.text(p[0] + 0.5, p[1], p[2], label,
                     color='darkred', fontweight='bold', fontsize=10, ha='left', va='center',
                     bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=1)) 
