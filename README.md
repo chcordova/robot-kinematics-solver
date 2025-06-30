@@ -1,6 +1,6 @@
 # Robot Kinematics Solver (Solucionador de Cinemática Robótica)
 
-[![Python: 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
+[![Python: 3.12+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 
@@ -8,8 +8,7 @@ Un simulador en Python para analizar, comparar y visualizar la cinemática de un
 
 Este proyecto fue desarrollado como parte del curso de **Recursos Computacionales**, con el objetivo de aplicar conceptos teóricos de álgebra lineal, cinemática y patrones de diseño de software en una implementación funcional.
 
-![Demo del Simulador](https://i.imgur.com/g8e1O7U.jpg) 
-*(Te sugiero reemplazar esta URL con una captura de pantalla de tu propio gráfico final)*
+![Demo del Simulador](./assets/kinematics-demo.png) 
 
 ---
 
