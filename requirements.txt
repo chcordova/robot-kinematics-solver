@@ -10,7 +10,7 @@ identify==2.6.12
 kiwisolver==1.4.8
 matplotlib==3.10.3
 nodeenv==1.9.1
-numpy==2.3.1
+numpy @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_a51i_mbs7m/croot/numpy_and_numpy_base_1708638620867/work/dist/numpy-1.26.4-cp312-cp312-macosx_11_0_arm64.whl#sha256=37afb6b734a197702d848df93bd67c10b52f6467d56e518950d84b6b1c949d27
 packaging==25.0
 pgraph-python==0.6.3
 pillow==11.2.1
@@ -23,6 +23,7 @@ PyYAML==6.0.2
 roboticstoolbox-python==1.1.1
 rtb-data==1.0.1
 scipy==1.16.0
+setuptools==78.1.1
 six==1.17.0
 spatialgeometry==1.1.0
 spatialmath-python==1.1.14
@@ -30,3 +31,4 @@ swift-sim==1.1.0
 typing_extensions==4.14.0
 virtualenv==20.31.2
 websockets==15.0.1
+wheel==0.45.1

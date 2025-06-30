@@ -1,39 +1,61 @@
 # Robot Kinematics Solver (Solucionador de Cinemática Robótica)
 
-[![Python: 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python: 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 
-Un simulador en Python para analizar y visualizar la cinemática directa e inversa de un brazo robótico de 3 Grados de Libertad (GDL) utilizando un enfoque matricial basado en Denavit-Hartenberg (D-H).
+Un simulador en Python para analizar, comparar y visualizar la cinemática de un brazo robótico de 3 Grados de Libertad (GDL). El proyecto implementa múltiples enfoques de solución y está diseñado con una arquitectura de software modular y extensible.
 
-Este proyecto fue desarrollado como parte del curso de **Recursos Computacionales**, con el objetivo de aplicar conceptos teóricos de álgebra matricial y robótica en una implementación funcional.
+Este proyecto fue desarrollado como parte del curso de **Recursos Computacionales**, con el objetivo de aplicar conceptos teóricos de álgebra lineal, cinemática y patrones de diseño de software en una implementación funcional.
 
-![Demo del Simulador](https://i.imgur.com/eBwFKEG.png)  ---
+![Demo del Simulador](https://i.imgur.com/g8e1O7U.jpg) 
+*(Te sugiero reemplazar esta URL con una captura de pantalla de tu propio gráfico final)*
+
+---
+
+## 🏛️ Arquitectura del Software
+
+El proyecto está estructurado como un paquete de Python y sigue el **Patrón de Diseño Strategy** para permitir la intercambiabilidad de los algoritmos de cinemática.
+
+* **`src/robot_kinematics_solver/`**: Es el paquete principal de Python.
+    * `kinematics.py`: Contiene toda la lógica del proyecto, incluyendo:
+        * `KinematicsSolver`: Una clase base abstracta que define la interfaz común para todos los solvers.
+        * `GeometricSolver`, `MatrixDHSolver`, `RTBSolver`: Implementaciones concretas de cada estrategia de solución.
+        * `RobotArm`: La clase de contexto que utiliza un solver específico para realizar los cálculos.
+    * `__init__.py`: Convierte el directorio en un paquete de Python y expone las clases principales.
+
+* **`notebooks/`**: Contiene los cuadernos de Jupyter (`.ipynb`) utilizados para la exploración, pruebas y análisis interactivo de cada enfoque cinemático.
+
+* **`docs/`**: Almacena la documentación teórica del proyecto, como el archivo `Análisis de Cinemática.pdf`.
+
+---
 
 ## 🚀 Cómo Empezar
 
-Sigue estos pasos para tener una copia local del proyecto y ejecutar el simulador.
+Sigue estos pasos para configurar el entorno con Conda y ejecutar el simulador.
 
-### Pre-requisitos
+### Prerrequisitos
 
-Asegúrate de tener instalado Python 3.8 o superior.
+* Tener **Miniconda** o **Anaconda** instalado.
+* Una versión de Python estable como la 3.11 o 3.12.
 
 ### Instalación
 
 1.  **Clona el repositorio:**
     ```sh
-    git clone [https://github.com/](https://github.com/)[TU_USUARIO]/robot-kinematics-solver.git
+    git clone [https://github.com/chcordova/robot-kinematics-solver.git](https://github.com/chcordova/robot-kinematics-solver.git)
     cd robot-kinematics-solver
     ```
 
-2.  **Crea un entorno virtual (Recomendado):**
+2.  **Crea y activa el entorno de Conda:**
+    Este comando crea un ambiente llamado `robotica` con Python 3.12 y una versión de NumPy compatible.
     ```sh
-    python -m venv venv
-    source venv/bin/activate  # En macOS/Linux
-    # venv\Scripts\activate   # En Windows
+    conda create --name robotica python=3.12 "numpy<2" -y
+    conda activate robotica
     ```
 
 3.  **Instala las dependencias:**
-    Este proyecto utiliza las librerías listadas en el archivo `requirements.txt`.
+    El archivo `requirements.txt` contiene todas las librerías necesarias.
     ```sh
     pip install -r requirements.txt
     ```
@@ -42,30 +64,18 @@ Asegúrate de tener instalado Python 3.8 o superior.
 
 ## 🛠️ Uso del Simulador
 
-El script principal se encuentra en la carpeta `src`. Para ejecutar la demostración que calcula la cinemática directa e inversa y muestra los gráficos:
+Una vez que el entorno está configurado y activado, puedes ejecutar la suite de demostración completa.
+
+El script probará automáticamente las tres estrategias de solución (`matrix`, `geometric`, `rtb`) y generará los gráficos comparativos para cada una.
+
+**Ejecuta el script como un módulo de Python desde la carpeta raíz del proyecto:**
 
 ```sh
-python src/robot_arm_kinematics.py
+python -m src.robot_kinematics_solver.kinematics
 ```
-
-Esto ejecutará el bloque `if __name__ == "__main__":`, que contiene un ejemplo de uso completo y la verificación de los algoritmos.
-
----
-
-## 🏛️ Enfoque Arquitectónico
-
-El proyecto está estructurado para separar la lógica del robot de su ejecución y análisis.
-
-* **`src/robot_arm_kinematics.py`**: Contiene la clase principal `RobotArm`. Esta clase encapsula toda la lógica matemática (cinemática directa e inversa) y las propiedades geométricas (longitudes, parámetros D-H) del brazo robótico. También incluye una función de utilidad `plot_arm` para la visualización.
-
-* **`notebooks/`**: Esta carpeta contiene cuadernos de Jupyter (`.ipynb`) utilizados para la exploración, desarrollo y presentación de los diferentes enfoques (geométrico, matricial, etc.). Permiten un análisis interactivo de los algoritmos.
-
-* **`docs/`**: Contiene la documentación teórica del proyecto, incluyendo el desarrollo matemático detallado en el archivo `Análisis de Cinemática.pdf`.
 
 ---
 
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
-
-*(Recuerda crear un archivo LICENSE en tu repositorio si aún no lo has hecho).*
