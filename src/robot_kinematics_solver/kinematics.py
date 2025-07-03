@@ -356,7 +356,9 @@ def run_demonstration(strategy, lengths, angles_deg):
 # 7. MAIN EXECUTION
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
-    robot_lengths_main = [10, 12, 8]
-    angles_deg_main = [40, 60, -50]
+    # Definición de las longitudes de los eslabones del robot
+    robot_lengths_main = [10, 12, 8] 
+    # Definición de los ángulos en grados para la demostración
+    angles_deg_main = [40, 60, -50] # [0, 0, 0] - [45, 90, 0] - [30, 20, 100] - [120, 135, -30] - [40, 60, -50]
     for strategy in ['matrix', 'geometric', 'rtb']:
         run_demonstration(strategy, robot_lengths_main, angles_deg_main)
