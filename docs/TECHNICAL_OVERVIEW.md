@@ -1,30 +1,21 @@
 
-# 🤖 Análisis de Código de Cinemática para Brazo Robótico 3GDL
+# 🤖 Análisis del Código de Cinemática para Brazo Robótico 3GDL
 
-Este repositorio contiene una implementación completa y modular de la cinemática directa e inversa para un brazo robótico de 3 grados de libertad, utilizando tres enfoques: **geométrico**, **matricial (Denavit-Hartenberg)** y **Robotics Toolbox (RTB)**.
+Este informe documenta una implementación modular de cinemática directa (CD) e inversa (CI) para un brazo robótico con 3 grados de libertad (3GDL), usando tres enfoques diferentes: **Geométrico**, **Matriz Denavit-Hartenberg (DH)** y **Robotics Toolbox (RTB)**. La arquitectura del código sigue principios de diseño como el **Patrón Strategy**, y está optimizado para visualización 3D y validación numérica.
 
 ---
 
 ## 🧩 Estructura del Código
 
-### 0. Importaciones y Robustez
+### 1. Importaciones y Control de Dependencias
 
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-from abc import ABC, abstractmethod
-```
-
-- **numpy**: operaciones matemáticas vectoriales.
-- **matplotlib**: visualización 2D/3D.
-- **abc**: define interfaces abstractas.
-- **roboticstoolbox (opcional)**: librería de simulación avanzada.
+Se utilizan bibliotecas científicas (`numpy`, `matplotlib`), abstracciones (`ABC`) y se verifica la disponibilidad de `roboticstoolbox`.
 
 ---
 
-### 1. `KinematicsSolver` (Patrón de Diseño Strategy)
+### 2. Clase Abstracta `KinematicsSolver`
 
-Define una interfaz base para resolver cinemática directa e inversa:
+Define la interfaz común para resolver CD y CI:
 
 ```python
 class KinematicsSolver(ABC):
@@ -34,38 +25,31 @@ class KinematicsSolver(ABC):
 
 ---
 
-### 2. `GeometricSolver`: Enfoque Trigonométrico
+### 3. Implementaciones Concretas de Solvers
 
-Calcula ángulos y posiciones utilizando relaciones trigonométricas:
+#### 🧮 `GeometricSolver`
 
-- Usa senos, cosenos y ley de cosenos.
-- Permite elegir entre solución "elbow up" o "elbow down".
+- Utiliza trigonometría clásica para resolver la cinemática.
+- Soporta configuraciones "elbow up" y "elbow down".
+- Operaciones explícitas en los planos XY y XZ.
 
----
+#### 🔢 `MatrixDHSolver`
 
-### 3. `MatrixDHSolver`: Matrices Homogéneas y DH
+- Usa matrices homogéneas según la convención DH.
+- Aplica transformación e inversión de marcos.
+- Alta precisión en la reconstrucción de la posición final.
 
-Emplea la convención Denavit-Hartenberg:
+#### 🧰 `RTBSolver`
 
-- Calcula matrices de transformación para cada articulación.
-- Encadena transformaciones para obtener posición final.
-- Usa inversión de marcos para simplificar la cinemática inversa.
-
----
-
-### 4. `RTBSolver`: Robotics Toolbox
-
-Utiliza funciones avanzadas como `ikine_LM`:
-
-- Modela el robot con `DHRobot`.
-- Aplica métodos iterativos numéricos.
-- Ideal para simulación realista.
+- Usa la librería `roboticstoolbox-python` con modelo `DHRobot`.
+- Implementa solución numérica con `ikine_LM`.
+- Ideal para pruebas avanzadas y extensibilidad en ROS/Simulación.
 
 ---
 
-### 5. `RobotArm`: Clase Contenedora
+### 4. `RobotArm`: Contenedor de Alto Nivel
 
-Selecciona e inicializa el solver apropiado:
+Instancia un solver y ejecuta las operaciones de CD y CI de manera uniforme:
 
 ```python
 robot = RobotArm(lengths=[10, 12, 8], solver_strategy='matrix')
@@ -73,39 +57,39 @@ robot = RobotArm(lengths=[10, 12, 8], solver_strategy='matrix')
 
 ---
 
-### 6. `plot_arm`: Visualización 3D con Matplotlib
+### 5. `plot_arm`: Visualización en 3D
 
-Dibuja el robot y sus ángulos, posiciones y objetivo:
+Renderiza el brazo en `matplotlib` con:
 
-- Articulaciones (azul)
 - Eslabones (líneas)
+- Articulaciones (puntos)
 - Objetivo (estrella dorada)
-- Etiquetas dinámicas y escala ajustada.
+- Etiquetas interactivas y escala adaptativa
 
 ---
 
-### 7. `run_demonstration`: Simulación y Comparación
+### 6. `run_demonstration`: Validación de Estrategias
 
-- Ejecuta CD e imprime posición del efector final.
-- Ejecuta CI para recuperar ángulos.
-- Verifica que CI reproduzca la CD.
-- Grafica ambas soluciones.
+Función principal que compara resultados de CD y CI:
+
+- Calcula posición del efector final desde ángulos.
+- Recupera ángulos desde la posición con CI.
+- Compara si CI reproduce los ángulos originales.
+- Visualiza ambas soluciones lado a lado.
 
 ---
 
-### 8. Bloque Principal
+### 7. Ejecución Principal
 
 ```python
 if __name__ == "__main__":
-    ...
+    for strategy in ['matrix', 'geometric', 'rtb']:
+        run_demonstration(strategy, [10, 12, 8], [40, 60, -50])
 ```
-
-- Corre las 3 estrategias: `'matrix'`, `'geometric'`, `'rtb'`.
-- Usa ángulos de entrada `[40°, 60°, -50°]`.
 
 ---
 
-## 📦 Requisitos
+## 📦 Requisitos del Proyecto
 
 ```bash
 pip install numpy matplotlib roboticstoolbox-python spatialmath-python
@@ -115,8 +99,6 @@ pip install numpy matplotlib roboticstoolbox-python spatialmath-python
 
 ## 📘 Créditos y Licencia
 
-Proyecto educativo para entender cinemática robótica.  
-Autor: Charles Cordova.
+Proyecto educativo de simulación y análisis de cinemática robótica.  
 
 ---
-
